@@ -4,7 +4,7 @@ First Step To Build Big Crawler.
 实验目标
 ---------
 
-+ 爬取x-cold的博客 [http://blog.lxstart.net/](http://blog.lxstart.net/) 的全站文章（约20-30篇）
++ 爬取x-cold的博客：http://blog.lxstart.net/ 的全站文章（约20-30篇）
 
 + 结构化爬取的文章，持久化到本地（数据库、文件均可，暂时不考虑存储优化）
 
@@ -34,4 +34,6 @@ Nodejs: v4.3.0
 其他注意事项
 ---------
 
-本次练习采用使用es5
++ 本次练习采用使用es5
+
++ 请使用jshint进行代码检查，通过后方可提交（可以考虑进行git-hook）
