@@ -1,15 +1,14 @@
 /**
  * 单进程爬虫模块
- * 
+ *
  * @description 爬取 http://blog.lxstart.net/ 站点的所有文章
- * 
+ *
  * @author: x-cold
  * @date: 2016-12-21
- * 
+ *
  */
 
 const collector = require('./collector.js')
-const request = require('request-promise')
 const queuefun = require('queue-fun')
 const url = require('url')
 const Logger = console
@@ -63,11 +62,11 @@ const fetchDetail = function (seedUrl) {
   })
 }
 
-const main = (function () {
+const start = function () {
   console.time('FETCH')
   fetchList(seedList).then(list => {
     // 启动队列服务
-    queue = new Queue(20, {
+    let queue = new Queue(20, {
       'event_end': res => {
         console.timeEnd('FETCH')
       }
@@ -79,4 +78,6 @@ const main = (function () {
   }).catch(err => {
     Logger.error(err)
   })
-})()
+}
+
+start()

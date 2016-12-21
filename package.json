@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "eslint --ext .js * || exit 0"
+    "eslint": "eslint --ext .js app || exit 0",
+    "start": "node app/crawler.js"
   },
   "repository": {
     "type": "git",

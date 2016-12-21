@@ -44,7 +44,7 @@ module.exports = function ($, sel, key) {
     let _el
     for (let i = 0; i < el.length; i++) {
       _el = $(el[i])
-      list.push(attrFlag ?_el.attr(attr).trim() : _el[attr]().trim())
+      list.push(attrFlag ? _el.attr(attr).trim() : _el[attr]().trim())
     }
     return list
   }
@@ -52,5 +52,5 @@ module.exports = function ($, sel, key) {
   // 单个字符串
   // 如果超过一个匹配的元素，则取第一个
   el.length > 1 && (el = $(el[0]))
-  return attrFlag ?  el.attr(attr).trim() : el[attr]().trim()
+  return attrFlag ? el.attr(attr).trim() : el[attr]().trim()
 }
