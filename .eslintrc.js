@@ -19,5 +19,9 @@ module.exports = {
     'space-before-function-paren': 1,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
+  },
+  
+  settings: {
+    "import/core-modules": [ "meteor/meteor" ]
   }
 }

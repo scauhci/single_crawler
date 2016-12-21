@@ -10,4 +10,4 @@ const init = () => {
   return seed
 }
 
-module.exports = init
+module.exports = init()
