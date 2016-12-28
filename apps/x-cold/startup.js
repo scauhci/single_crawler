@@ -7,15 +7,15 @@ const fs = require('fs')
 const path = require('path')
 const Crawler = require('./app/crawler')
 
-const getTaskFiles = function(dir) {
+const getTaskFiles = dir => {
   let list = fs.readdirSync(dir)
-  list= list.map(file => {
+  list = list.map(file => {
     return require(path.join(__dirname, dir, file))
   })
   return list
 }
 
-const main = function () {
+const main = () => {
   commander.version('0.0.1')
     .option('-v, --version', 'version')
     .parse(process.argv)

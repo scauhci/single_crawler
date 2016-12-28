@@ -15,8 +15,6 @@ const url = require('url')
 const Logger = console
 const Queue = queuefun.Queue(Promise)
 
-let config = {}
-
 class Runner {
   constructor (config) {
     this.config = config
@@ -66,7 +64,6 @@ class Runner {
       uri: seedUrl,
       selector: config.detail.selector
     }).then(data => {
-
       if (!(data && data.title)) {
         return Promise.reject(new Error('FETCH DETAIL ERROR!'))
       }
