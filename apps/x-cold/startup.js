@@ -24,7 +24,9 @@ const main = () => {
 
   taskList.forEach(conf => {
     let app = new Crawler(conf)
-    app.start()
+    if (conf.autorun) {
+      app.start()
+    }
   })
 }
 

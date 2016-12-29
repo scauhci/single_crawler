@@ -14,6 +14,7 @@ const queuefun = require('queue-fun')
 const url = require('url')
 const Logger = console
 const Queue = queuefun.Queue(Promise)
+const storage = require('./storage')
 
 class Runner {
   constructor (config) {
@@ -68,8 +69,9 @@ class Runner {
         return Promise.reject(new Error('FETCH DETAIL ERROR!'))
       }
 
-      Logger.info('Success Fetch Detail: %s', data.title || '')
-      return data
+      Logger.info('Success Fetch Detail: %s', data.title)
+      // Logger.info(data.content)
+      return storage.write(data.title, data.content)
     })
   }
 
