@@ -7,9 +7,10 @@ module.exports = {
   domain: 'http://www.ttlsa.com/',
   // 种子URL列表
   seedList: [
-    // 'http://www.ttlsa.com/mysql/',
+    'http://www.ttlsa.com/mysql/',
     'http://www.ttlsa.com/nginx/',
-    // 'http://www.ttlsa.com/log-system/elk/'
+    'http://www.ttlsa.com/log-system/elk/',
+    'http://www.ttlsa.com/nosql/mongodb/'
   ],
   // 列表相关的配置
   list: {

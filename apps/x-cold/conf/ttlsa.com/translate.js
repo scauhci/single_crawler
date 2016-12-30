@@ -47,6 +47,13 @@ const start = ($, uri) => {
     $(el).remove()
   })
 
+  // 处理内联代码
+  let _code = $('code')
+  _code.each((index, el) => {
+    $(el).after(`<span style="padding: 2px 4px; font-size: 90%; border-radius: 3px; color: #c7254e; background-color: #f9f2f4;">${$(el).text().trim()}</span>`)
+    $(el).remove()
+  })
+  
   let html = $.html().trim()
 
   // 添加导读
