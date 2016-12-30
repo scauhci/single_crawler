@@ -55,6 +55,8 @@ class Runner {
       })
 
       return list
+    }).catch(err => {
+      Logger.error(err)
     })
   }
 
@@ -71,7 +73,12 @@ class Runner {
 
       Logger.info('Success Fetch Detail: %s', data.title)
       // Logger.info(data.content)
-      return storage.write(data.title, data.content)
+      return storage.write(data.title, data.content, {
+        uri: seedUrl,
+        config: config
+      })
+    }).catch(err => {
+      Logger.error(err)
     })
   }
 

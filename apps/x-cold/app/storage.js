@@ -28,15 +28,19 @@ const writeFile = (file, data, options) => {
     })
 }
 
-
-
-const write = (filename, content) => {
+const write = (filename, content, options) => {
     filename = path.join(tmpDir, filename + '.html')
 
     let $ = cheerio.load(content, {
         decodeEntities: false
     })
-    content = translate.translate($)
+
+    try {
+        content = translate.translate($, options.uri)
+    } catch (err) {
+        return Promise.reject(err)
+    }
+    
     return writeFile(filename, content, {
         // default
         encoding: 'utf8'
