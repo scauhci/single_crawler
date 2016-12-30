@@ -4,7 +4,6 @@
 
 const fs = require('fs')
 const path = require('path')
-const translate = require('./translate')
 const cheerio = require('cheerio')
 
 let tmpDir = require('os').tmpDir()
@@ -35,8 +34,11 @@ const write = (filename, content, options) => {
         decodeEntities: false
     })
 
+    const conf = options.config
+    const translate = conf.translate
+    
     try {
-        content = translate.translate($, options.uri)
+        content = translate.start($, options.uri)
     } catch (err) {
         return Promise.reject(err)
     }

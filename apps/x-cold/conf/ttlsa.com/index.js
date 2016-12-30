@@ -7,8 +7,8 @@ module.exports = {
   domain: 'http://www.ttlsa.com/',
   // 种子URL列表
   seedList: [
-    'http://www.ttlsa.com/mysql/',
-    // 'http://www.ttlsa.com/nginx/',
+    // 'http://www.ttlsa.com/mysql/',
+    'http://www.ttlsa.com/nginx/',
     // 'http://www.ttlsa.com/log-system/elk/'
   ],
   // 列表相关的配置
@@ -25,5 +25,6 @@ module.exports = {
     }
   },
   maxPage: 100,
-  autorun: true
+  autorun: true,
+  translate: require('./translate')
 }

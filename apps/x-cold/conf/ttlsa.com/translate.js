@@ -15,7 +15,7 @@ const clear = $ => {
   }
 }
 
-const translate = ($, uri) => {
+const start = ($, uri) => {
   clear($)
 
   // 处理代码块
@@ -59,4 +59,4 @@ const translate = ($, uri) => {
   return guide + html + copyright
 }
 
-exports.translate = translate
+exports.start = start
