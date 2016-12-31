@@ -10,7 +10,8 @@ module.exports = {
     'http://www.ttlsa.com/mysql/',
     'http://www.ttlsa.com/nginx/',
     'http://www.ttlsa.com/log-system/elk/',
-    'http://www.ttlsa.com/nosql/mongodb/'
+    'http://www.ttlsa.com/nosql/mongodb/',
+    'http://www.ttlsa.com/cluster/'
   ],
   // 列表相关的配置
   list: {
@@ -26,6 +27,6 @@ module.exports = {
     }
   },
   maxPage: 100,
-  autorun: true,
+  autorun: false,
   translate: require('./translate')
 }
