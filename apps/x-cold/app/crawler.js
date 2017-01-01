@@ -19,6 +19,9 @@ const storage = require('./storage')
 class Runner {
   constructor (config) {
     this.config = config
+    this.done = config.done || (res) => {
+      Logger.info('Task Finished.')
+    }
   }
 
   // 获取文章列表
@@ -90,7 +93,7 @@ class Runner {
       // 启动队列服务
       let queue = new Queue(20, {
         'event_end': res => {
-          // console.timeEnd('FETCH')
+          self.done(res)
         }
       })
 

@@ -26,7 +26,6 @@ module.exports = {
       'content': '.single-content@html'
     }
   },
-  maxPage: 100,
   autorun: false,
   translate: require('./translate')
 }

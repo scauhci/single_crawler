@@ -25,6 +25,12 @@ const writeFile = (file, data, options) => {
   })
 }
 
+const translate = {
+  start($, uri) {
+    return $.html()
+  }
+}
+
 const write = (filename, content, options) => {
   filename = path.join(tmpDir, filename + '.html')
 
@@ -33,7 +39,7 @@ const write = (filename, content, options) => {
   })
 
   const conf = options.config
-  const translate = conf.translate
+  const translate = conf.translate || translate
 
   try {
     content = translate.start($, options.uri)
