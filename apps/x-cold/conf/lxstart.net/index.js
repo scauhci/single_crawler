@@ -27,5 +27,5 @@ module.exports = {
       'content': '.article-entry@html'
     }
   },
-  maxPage: 100
+  autorun: true
 }

@@ -25,5 +25,5 @@ module.exports = {
       'content': '.post-content@html'
     }
   },
-  maxPage: 100
+  autorun: true
 }

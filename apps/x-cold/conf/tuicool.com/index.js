@@ -24,7 +24,6 @@ module.exports = {
       'source': '.article_meta a@href'
     }
   },
-  maxPage: 100,
   autorun: true,
   translate: require('./translate')
 }

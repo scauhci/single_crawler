@@ -16,6 +16,7 @@ module.exports = {
   // 列表相关的配置
   list: {
     selector: {
+      // 暂定字段名list
       'list[]': 'h2.entry-title a@href'
     }
   },
