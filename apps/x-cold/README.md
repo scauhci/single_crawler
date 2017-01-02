@@ -11,3 +11,7 @@
 ```bash
 > npm run eslint
 ```
+
++ 配置编写
+
+[usage](./USAGE.md)
