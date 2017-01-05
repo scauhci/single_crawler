@@ -16,12 +16,14 @@ const Logger = console
 const Queue = queuefun.Queue(Promise)
 const storage = require('./storage')
 
+const defaultDoneOperation = res => {
+  Logger.info('Task Finished.')
+}
+
 class Runner {
   constructor (config) {
     this.config = config
-    this.done = config.done || (res) => {
-      Logger.info('Task Finished.')
-    }
+    this.done = config.done || defaultDoneOperation
   }
 
   // 获取文章列表
