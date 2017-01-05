@@ -2,7 +2,7 @@
  * startup.js
  */
 
-const commander = require('commander')
+const comander = require('comander')
 const fs = require('fs')
 const path = require('path')
 const Crawler = require('./app/crawler')
@@ -16,7 +16,7 @@ const getTaskFiles = dir => {
 }
 
 const main = () => {
-  commander.version('0.0.1')
+  comander.version('0.0.1')
     .option('-v, --version', 'version')
     .parse(process.argv)
 

@@ -25,7 +25,7 @@ const writeFile = (file, data, options) => {
   })
 }
 
-const translate = {
+const defaultTranslate = {
   start($, uri) {
     return $.html()
   }
@@ -39,7 +39,7 @@ const write = (filename, content, options) => {
   })
 
   const conf = options.config
-  const translate = conf.translate || translate
+  const translate = conf.translate || defaultTranslate
 
   try {
     content = translate.start($, options.uri)
