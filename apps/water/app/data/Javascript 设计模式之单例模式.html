@@ -1,0 +1,115 @@
+<blockquote>
+<p>单例模式是一个非常典型的设计模式，保证一个类只有唯一实例，并且提供单一的访问点。单例的对象不同于静态类，我们可以延迟单例对象的初始化，通常这种情况发生在我们需要等待加载创建单例的依赖。</p>
+</blockquote>
+<a id="more"></a>
+<h4 id="单例的特性"><a href="#单例的特性" class="headerlink" title="单例的特性"></a>单例的特性</h4><ul>
+<li><p>全局唯一实例</p>
+</li>
+<li><p>单一的访问入口</p>
+</li>
+</ul>
+<h4 id="如何创建一个单例？"><a href="#如何创建一个单例？" class="headerlink" title="如何创建一个单例？"></a>如何创建一个单例？</h4><p>接下来我将以设计一个全局的Loading状态的实例以渐入佳境。</p>
+<blockquote>
+<p>你不是真正的单例？</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">// 创建一个loading实例</span></div><div class="line"><span class="keyword">var</span> createLoading = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">var</span> LOADING_TPL = <span class="string">'&lt;div id="loading"&gt;&lt;/div&gt;'</span>;</div><div class="line">	<span class="keyword">var</span> loading = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</div><div class="line">	loading.innerText = LOADING_TPL;</div><div class="line">	<span class="keyword">return</span> <span class="built_in">document</span>.body.appendChild(loading);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>假定createLoading是一个全局的函数，我们在任意的地方都能对其进行访问和调用。</p>
+<blockquote>
+<p>Ajax With Loading</p>
+</blockquote>
+<p>假定我们封装了一个调用Ajax的函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 创建一个loading实例</span></div><div class="line"><span class="keyword">var</span> loading = createLoading();</div><div class="line"></div><div class="line"><span class="comment">// Ajax</span></div><div class="line"><span class="keyword">var</span> Ajax = <span class="function"><span class="keyword">function</span> (<span class="params">opt</span>) </span>&#123;</div><div class="line">	<span class="keyword">var</span> options = $.extend(opt, &#123;</div><div class="line">		success: <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</div><div class="line">			loading.hide();</div><div class="line">			opt.success(data);</div><div class="line">		&#125;,</div><div class="line">		error: <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</div><div class="line">			loading.hide();</div><div class="line">			opt.error(data);</div><div class="line">		&#125;</div><div class="line">	&#125;);</div><div class="line">	loading.show();</div><div class="line">	<span class="keyword">return</span> $.ajax(options);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 下面是调用的代码</span></div><div class="line"></div><div class="line">Ajax(&#123;</div><div class="line">	url: <span class="string">'/api'</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>通过如上的操作，我们可以让通过Ajax函数发起的请求，在发起时触发loading的展示效果，在结束时触发loading的隐藏效果。</p>
+<blockquote>
+<p>Async Operation With Loading</p>
+</blockquote>
+<p>假定同时，我们又有一个新的需求：在另外一个异步的函数里面也需要触发loading的效果。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> loading = createLoading();</div><div class="line"></div><div class="line"><span class="comment">// 异步函数</span></div><div class="line"><span class="keyword">var</span> asyncFunctionMaker = <span class="function"><span class="keyword">function</span>(<span class="params">operation, callback</span>) </span>&#123;</div><div class="line">	loading.show();</div><div class="line">	<span class="keyword">var</span> cb = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">		loading.hide();</div><div class="line">		callback.apply(<span class="literal">null</span>, <span class="built_in">arguments</span>);</div><div class="line">	&#125;;</div><div class="line">	operation.call(<span class="literal">null</span>, callback);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 下面是调用的代码</span></div><div class="line"><span class="keyword">var</span> op = <span class="function"><span class="keyword">function</span>(<span class="params">cb</span>) </span>&#123;</div><div class="line">	setTimeout(cb, <span class="number">200</span>);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> cb = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">	<span class="built_in">console</span>.log(<span class="string">'test'</span>);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">asyncFunctionMaker(op, cb);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>引入单例模式</p>
+</blockquote>
+<p>虽然通过以上的方案，我们能够同时应对以上的需求，但是我们也发现一些问题。</p>
+<ol>
+<li><p>为了保持模块的独立，我们可能会重复创建loading对象。</p>
+</li>
+<li><p>每次触发show或者hide效果，实际上还需要判断loading当前的状态</p>
+</li>
+</ol>
+<p>解决问题1，细心的同学会说，直接创建一个全局变量，共享不同模块对loading的访问。确实，这可以解决重复创建的问题，但假设我们某些页面根本就不需要loading效果，那么这个对象就是多余的。这时候，我们可以通过惰性单例的特性来延迟创建。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> createLoading = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">var</span> loading;</div><div class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">		<span class="keyword">return</span> loading || ...(这里是第一段函数的逻辑)</div><div class="line">	&#125;</div><div class="line">&#125;();</div></pre></td></tr></table></figure>
+<p>由于闭包的对变量周期的延迟，我们在任一上下文环境下调用<code>var loading = createLoading()</code>至多只会创建一个loading对象，并且只会在需要调用的时候才会创建。</p>
+<p>对于问题2，则很好应付，我们可以重新对show和hide方法进行包装，让其在执行之前先判断loading的状态。方法类似上面Ajax和AsyncFunctionMaker中的函数包装。</p>
+<blockquote>
+<p>典型的单例包装函数</p>
+</blockquote>
+<p>最后，由于在JavaScript，每一个函数都是一级公民，因此我们可以把函数当做变量使用（事实上上面提供的实例的回调就是这种做法），我们可以建立一个单例模式通用包装器。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> singleton = <span class="function"><span class="keyword">function</span>(<span class="params"> fn </span>)</span>&#123;</div><div class="line">	<span class="keyword">var</span> result;</div><div class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">		<span class="keyword">return</span> result || (result = fn .apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>));</div><div class="line">	&#125;;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> createLoading = singleton(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">var</span> LOADING_TPL = <span class="string">'&lt;div id="loading"&gt;&lt;/div&gt;'</span>;</div><div class="line">	<span class="keyword">var</span> loading = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</div><div class="line">	loading.innerText = LOADING_TPL;</div><div class="line">	<span class="keyword">return</span> <span class="built_in">document</span>.body.appendChild(loading);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h4 id="典型应用场景"><a href="#典型应用场景" class="headerlink" title="典型应用场景"></a>典型应用场景</h4><ul>
+<li><p>惰性单例：在合适的时候才创建对象，如缓存对象等。</p>
+</li>
+<li><p>单例服务：Angular 1.x 的服务实例</p>
+</li>
+<li><p>单例组件：全局唯一的遮罩层、弹窗等</p>
+</li>
+</ul>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>单例模式能够我们能在全局的上下文环境下获取唯一的对象，这种特性适用于多次调用的对象。JavaScript的单例模式天生就与闭包撇不清关系，借助闭包对变量周期的“延期”而暂存某些状态，从而保证单例的唯一性。</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://www.jb51.net/article/78300.htm" target="_blank" rel="external">学习JavaScript设计模式之单例模式</a></p>
+<p><a href="https://github.com/x-cold/angular-weui/blob/master/src/js/services/toast.js" target="_blank" rel="external">AngularJs封装Toast服务</a></p>
+<p>《Javascript Design Patterns》</p><blockquote>
+<p>单例模式是一个非常典型的设计模式，保证一个类只有唯一实例，并且提供单一的访问点。单例的对象不同于静态类，我们可以延迟单例对象的初始化，通常这种情况发生在我们需要等待加载创建单例的依赖。</p>
+</blockquote>
+<a id="more"></a>
+<h4 id="单例的特性"><a href="#单例的特性" class="headerlink" title="单例的特性"></a>单例的特性</h4><ul>
+<li><p>全局唯一实例</p>
+</li>
+<li><p>单一的访问入口</p>
+</li>
+</ul>
+<h4 id="如何创建一个单例？"><a href="#如何创建一个单例？" class="headerlink" title="如何创建一个单例？"></a>如何创建一个单例？</h4><p>接下来我将以设计一个全局的Loading状态的实例以渐入佳境。</p>
+<blockquote>
+<p>你不是真正的单例？</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">// 创建一个loading实例</span></div><div class="line"><span class="keyword">var</span> createLoading = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">var</span> LOADING_TPL = <span class="string">'&lt;div id="loading"&gt;&lt;/div&gt;'</span>;</div><div class="line">	<span class="keyword">var</span> loading = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</div><div class="line">	loading.innerText = LOADING_TPL;</div><div class="line">	<span class="keyword">return</span> <span class="built_in">document</span>.body.appendChild(loading);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>假定createLoading是一个全局的函数，我们在任意的地方都能对其进行访问和调用。</p>
+<blockquote>
+<p>Ajax With Loading</p>
+</blockquote>
+<p>假定我们封装了一个调用Ajax的函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 创建一个loading实例</span></div><div class="line"><span class="keyword">var</span> loading = createLoading();</div><div class="line"></div><div class="line"><span class="comment">// Ajax</span></div><div class="line"><span class="keyword">var</span> Ajax = <span class="function"><span class="keyword">function</span> (<span class="params">opt</span>) </span>&#123;</div><div class="line">	<span class="keyword">var</span> options = $.extend(opt, &#123;</div><div class="line">		success: <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</div><div class="line">			loading.hide();</div><div class="line">			opt.success(data);</div><div class="line">		&#125;,</div><div class="line">		error: <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</div><div class="line">			loading.hide();</div><div class="line">			opt.error(data);</div><div class="line">		&#125;</div><div class="line">	&#125;);</div><div class="line">	loading.show();</div><div class="line">	<span class="keyword">return</span> $.ajax(options);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 下面是调用的代码</span></div><div class="line"></div><div class="line">Ajax(&#123;</div><div class="line">	url: <span class="string">'/api'</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>通过如上的操作，我们可以让通过Ajax函数发起的请求，在发起时触发loading的展示效果，在结束时触发loading的隐藏效果。</p>
+<blockquote>
+<p>Async Operation With Loading</p>
+</blockquote>
+<p>假定同时，我们又有一个新的需求：在另外一个异步的函数里面也需要触发loading的效果。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> loading = createLoading();</div><div class="line"></div><div class="line"><span class="comment">// 异步函数</span></div><div class="line"><span class="keyword">var</span> asyncFunctionMaker = <span class="function"><span class="keyword">function</span>(<span class="params">operation, callback</span>) </span>&#123;</div><div class="line">	loading.show();</div><div class="line">	<span class="keyword">var</span> cb = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">		loading.hide();</div><div class="line">		callback.apply(<span class="literal">null</span>, <span class="built_in">arguments</span>);</div><div class="line">	&#125;;</div><div class="line">	operation.call(<span class="literal">null</span>, callback);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 下面是调用的代码</span></div><div class="line"><span class="keyword">var</span> op = <span class="function"><span class="keyword">function</span>(<span class="params">cb</span>) </span>&#123;</div><div class="line">	setTimeout(cb, <span class="number">200</span>);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> cb = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">	<span class="built_in">console</span>.log(<span class="string">'test'</span>);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">asyncFunctionMaker(op, cb);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>引入单例模式</p>
+</blockquote>
+<p>虽然通过以上的方案，我们能够同时应对以上的需求，但是我们也发现一些问题。</p>
+<ol>
+<li><p>为了保持模块的独立，我们可能会重复创建loading对象。</p>
+</li>
+<li><p>每次触发show或者hide效果，实际上还需要判断loading当前的状态</p>
+</li>
+</ol>
+<p>解决问题1，细心的同学会说，直接创建一个全局变量，共享不同模块对loading的访问。确实，这可以解决重复创建的问题，但假设我们某些页面根本就不需要loading效果，那么这个对象就是多余的。这时候，我们可以通过惰性单例的特性来延迟创建。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> createLoading = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">var</span> loading;</div><div class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">		<span class="keyword">return</span> loading || ...(这里是第一段函数的逻辑)</div><div class="line">	&#125;</div><div class="line">&#125;();</div></pre></td></tr></table></figure>
+<p>由于闭包的对变量周期的延迟，我们在任一上下文环境下调用<code>var loading = createLoading()</code>至多只会创建一个loading对象，并且只会在需要调用的时候才会创建。</p>
+<p>对于问题2，则很好应付，我们可以重新对show和hide方法进行包装，让其在执行之前先判断loading的状态。方法类似上面Ajax和AsyncFunctionMaker中的函数包装。</p>
+<blockquote>
+<p>典型的单例包装函数</p>
+</blockquote>
+<p>最后，由于在JavaScript，每一个函数都是一级公民，因此我们可以把函数当做变量使用（事实上上面提供的实例的回调就是这种做法），我们可以建立一个单例模式通用包装器。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> singleton = <span class="function"><span class="keyword">function</span>(<span class="params"> fn </span>)</span>&#123;</div><div class="line">	<span class="keyword">var</span> result;</div><div class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">		<span class="keyword">return</span> result || (result = fn .apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>));</div><div class="line">	&#125;;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> createLoading = singleton(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">var</span> LOADING_TPL = <span class="string">'&lt;div id="loading"&gt;&lt;/div&gt;'</span>;</div><div class="line">	<span class="keyword">var</span> loading = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</div><div class="line">	loading.innerText = LOADING_TPL;</div><div class="line">	<span class="keyword">return</span> <span class="built_in">document</span>.body.appendChild(loading);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h4 id="典型应用场景"><a href="#典型应用场景" class="headerlink" title="典型应用场景"></a>典型应用场景</h4><ul>
+<li><p>惰性单例：在合适的时候才创建对象，如缓存对象等。</p>
+</li>
+<li><p>单例服务：Angular 1.x 的服务实例</p>
+</li>
+<li><p>单例组件：全局唯一的遮罩层、弹窗等</p>
+</li>
+</ul>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>单例模式能够我们能在全局的上下文环境下获取唯一的对象，这种特性适用于多次调用的对象。JavaScript的单例模式天生就与闭包撇不清关系，借助闭包对变量周期的“延期”而暂存某些状态，从而保证单例的唯一性。</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://www.jb51.net/article/78300.htm" target="_blank" rel="external">学习JavaScript设计模式之单例模式</a></p>
+<p><a href="https://github.com/x-cold/angular-weui/blob/master/src/js/services/toast.js" target="_blank" rel="external">AngularJs封装Toast服务</a></p>
+<p>《Javascript Design Patterns》</p>

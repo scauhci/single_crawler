@@ -1,10 +1,9 @@
- function merge() {
-   var ret = {}
-   for (var i in arguments) {
-     var m = arguments[i]
-     for (var j in m) ret[j] = m[j]
-   }
-   return ret
- }
+/**
+ * @author water
+ * @date 2017-01-09 17:12:21
+ * @description A try for node
+ */
+var collector = require('./collector.js')
+var url = 'http://blog.lxstart.net/2016/08/04/javascript/pattern/singleton/'
 
- console.log(merge({ a: 123 }, { b: 456 }))
+collector.fetchPage(url)

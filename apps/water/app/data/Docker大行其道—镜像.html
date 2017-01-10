@@ -1,0 +1,155 @@
+<blockquote>
+<p>作为Docker三大核心概念之一，Docker镜像（Docker Image）是一个面向Docker引擎的只读模板，包含文件系统。实际上每个Docker镜像包含一个独立的运行环境，如一个镜像包含centos操作系统环境，我们称之为一个centos镜像。</p>
+</blockquote>
+<p>Docker运行一个容器实例之前，可以以一个镜像为基础环境，如以一个包含centos操作系统的Docker镜像为模板。建立容器之前，Docker会检查本地是否存在对应的镜像，如果镜像不存在本地，Docker会尝试从默认的镜像仓库（Repository，通常默认为Docker Hub公共注册服务器中的仓库，用户可以根据具体环境和需求配置自定义镜像仓库）。</p>
+<a id="more"></a>
+<p>下面将介绍关于镜像的相关操作及命令。</p>
+<h4 id="查看镜像信息"><a href="#查看镜像信息" class="headerlink" title="查看镜像信息"></a>查看镜像信息</h4><ul>
+<li>查看本地镜像列表</li>
+</ul>
+<p><code>docker images</code> 命令可以查看本地主机已有的镜像列表，具体查询属性包括来源仓库，标签，ID，创建时间和镜像大小等。</p>
+<ul>
+<li>查看镜像具体的信息</li>
+</ul>
+<p><code>dpcler inspect ID</code>可以获取镜像的详细信息，执行后得到一个JSON格式的消息，如果仅仅需要查询镜像的某一项信息，可以使用<code>-f</code>参数来指定。例如，获取镜像的Author信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> docker inspect <span class="_">-f</span> &#123;&#123;<span class="string">".Author"</span>&#125;&#125; [IMAGE_ID]</div></pre></td></tr></table></figure>
+<ul>
+<li>给镜像添加一个自定义标签</li>
+</ul>
+<p><code>docker tag</code>可以给镜像指定自定义（一般情况下用于语义化）的标签，实际上就是给某个镜像添加一个“快捷方式”。</p>
+<h3 id="搜寻镜像"><a href="#搜寻镜像" class="headerlink" title="搜寻镜像"></a>搜寻镜像</h3><p><code>docker search</code>命令可以搜索远程镜像仓库内公共共享和私有的镜像，默认为Docker Hub官方镜像仓库，用法为<code>docker search TERM</code>.</p>
+<p>通过搜索命令可以查询到镜像的名字、描述、star数量、是否官方创建、是否自动创建等信息。</p>
+<h4 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h4><p><code>docker pull</code>命令可以从网络上下载镜像到本地。命令格式为<code>docker pull NAME[:TAG]</code>（如果不显式地指定TAG，默认会选择lastest标签）。</p>
+<p>当然，如果需要从非默认的镜像仓库下载镜像，也可以通过<code>docker pull URL</code>进行镜像的下载。当然，前提这个URL指向的是有效的远程镜像。</p>
+<h4 id="删除镜像"><a href="#删除镜像" class="headerlink" title="删除镜像"></a>删除镜像</h4><p><code>docker rmi</code>命令用于删除本地的镜像，用法为<code>docker rmi IMAGE[IMAGES...]</code>，其中IMAGE可以为标签或镜像ID。前面我们提及到标签事实上是“快捷方式”，因此通过标签删除镜像时，会先删除这个“快捷方式”，当某个镜像只剩下一个标签时，通过删除该标签才会把镜像从本地移除掉。</p>
+<p>如果你的镜像还有正在运行中的容器实例的话，通过<code>docker rmi</code>是无法移除掉的，当然，你可以通过<code>-f</code>参数强制删除某个镜像，但这往往是不安全的。正确的做法是通过<code>docker rm CONTAINER</code>移除对应的容器，再通过<code>docker rmi</code>进行镜像的删除。</p>
+<h4 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h4><p>一般情况下，我们可以通过三种途径进行Docker镜像的创建：基于已有镜像的容器的创建，本地模板导入、Dockerfile创建。</p>
+<ul>
+<li>基于已有镜像的容器创建镜像</li>
+</ul>
+<p>该方法主要依赖于<code>docker commit</code>命令，用法为<code>docker commit [OPTIONS] [RESPOSITORY[:TAG]]</code>，主要选项包括：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th style="text-align:center">option</th>
+<th style="text-align:right">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-a</code></td>
+<td style="text-align:center">–author=””</td>
+<td style="text-align:right">作者信息</td>
+</tr>
+<tr>
+<td><code>-m</code></td>
+<td style="text-align:center">–message=””</td>
+<td style="text-align:right">提交信息</td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td style="text-align:center">–pause=true</td>
+<td style="text-align:right">提交时暂停容器运行</td>
+</tr>
+</tbody>
+</table>
+<p>通过<code>docker ps</code>命令获取需要创建镜像的容器ID，通过执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> docker commit -m <span class="string">"[MESSAGE]"</span> <span class="_">-a</span> <span class="string">"[AUTHOR]"</span> [CONTAINER_ID] [IMAGE_NAME]</div></pre></td></tr></table></figure>
+<ul>
+<li>本地模板导入镜像</li>
+</ul>
+<p><code>docker import</code>可以从一个 打包好的镜像文件创建镜像，一般情况下表现为.tar.gz压缩包。例如，导入一个ubuntu操作系统的镜像到本地：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> cat ubuntu-15.04-x86_64.tar.gz | docker import - ubuntu:15.04</div></pre></td></tr></table></figure>
+<ul>
+<li>Dockerfile创建镜像</li>
+</ul>
+<p>Dockerfile是一个文本格式的配置文件，实际表现为命令集合，用户通过自定义批处理命令来快速创建自定义镜像。Dockerfile通常包含四部分：基础镜像信息，维护者信息，镜像操作指令和容器启动时指令。 编辑完Dockerfile文件后，通过<code>docker build</code>命令创建镜像，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$sudo docker build -t [TAG_NAME] [DOCKERFILE_PATH]</div></pre></td></tr></table></figure>
+<h4 id="存出和载入镜像"><a href="#存出和载入镜像" class="headerlink" title="存出和载入镜像"></a>存出和载入镜像</h4><ul>
+<li>存出镜像：<code>docker save</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> docker save -o ubuntu-15.04-x86_64.tar ubuntu:15.04</div></pre></td></tr></table></figure>
+<ul>
+<li>载入镜像：<code>docker load</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> docker load --input ubuntu-15.04-x86_64.tar</div><div class="line"><span class="comment"># 或者</span></div><div class="line"><span class="variable">$sudo</span> docker load &lt; ubuntu-15.04-x86_64.tar</div></pre></td></tr></table></figure>
+<h4 id="上传镜像"><a href="#上传镜像" class="headerlink" title="上传镜像"></a>上传镜像</h4><p><code>docker push</code>命令可以将镜像上传到远程仓库（默认为DockerHub官方仓库，需要注册账号）。用法为：<code>docker push NAME[:TAG]</code>,强烈建议添加好语义化的标签名后上传。</p>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>镜像是开启Docker容器的前提，掌握镜像的概念以及对应的查看、获取、搜索、删除、创建、导入导出、上传等操作对于Docker的入门学习有莫大的帮助。我们还可以借助Docker Hub等镜像仓库还提供的更全面的镜像服务进行学习和使用，例如web查询系统 (<a href="http://index.docker.io/" target="_blank" rel="external">http://index.docker.io/</a>) 等，同时我们也可以将日常使用的高质量的镜像资源分享到开源社区共同学习。</p><blockquote>
+<p>作为Docker三大核心概念之一，Docker镜像（Docker Image）是一个面向Docker引擎的只读模板，包含文件系统。实际上每个Docker镜像包含一个独立的运行环境，如一个镜像包含centos操作系统环境，我们称之为一个centos镜像。</p>
+</blockquote>
+<p>Docker运行一个容器实例之前，可以以一个镜像为基础环境，如以一个包含centos操作系统的Docker镜像为模板。建立容器之前，Docker会检查本地是否存在对应的镜像，如果镜像不存在本地，Docker会尝试从默认的镜像仓库（Repository，通常默认为Docker Hub公共注册服务器中的仓库，用户可以根据具体环境和需求配置自定义镜像仓库）。</p>
+<a id="more"></a>
+<p>下面将介绍关于镜像的相关操作及命令。</p>
+<h4 id="查看镜像信息"><a href="#查看镜像信息" class="headerlink" title="查看镜像信息"></a>查看镜像信息</h4><ul>
+<li>查看本地镜像列表</li>
+</ul>
+<p><code>docker images</code> 命令可以查看本地主机已有的镜像列表，具体查询属性包括来源仓库，标签，ID，创建时间和镜像大小等。</p>
+<ul>
+<li>查看镜像具体的信息</li>
+</ul>
+<p><code>dpcler inspect ID</code>可以获取镜像的详细信息，执行后得到一个JSON格式的消息，如果仅仅需要查询镜像的某一项信息，可以使用<code>-f</code>参数来指定。例如，获取镜像的Author信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> docker inspect <span class="_">-f</span> &#123;&#123;<span class="string">".Author"</span>&#125;&#125; [IMAGE_ID]</div></pre></td></tr></table></figure>
+<ul>
+<li>给镜像添加一个自定义标签</li>
+</ul>
+<p><code>docker tag</code>可以给镜像指定自定义（一般情况下用于语义化）的标签，实际上就是给某个镜像添加一个“快捷方式”。</p>
+<h3 id="搜寻镜像"><a href="#搜寻镜像" class="headerlink" title="搜寻镜像"></a>搜寻镜像</h3><p><code>docker search</code>命令可以搜索远程镜像仓库内公共共享和私有的镜像，默认为Docker Hub官方镜像仓库，用法为<code>docker search TERM</code>.</p>
+<p>通过搜索命令可以查询到镜像的名字、描述、star数量、是否官方创建、是否自动创建等信息。</p>
+<h4 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h4><p><code>docker pull</code>命令可以从网络上下载镜像到本地。命令格式为<code>docker pull NAME[:TAG]</code>（如果不显式地指定TAG，默认会选择lastest标签）。</p>
+<p>当然，如果需要从非默认的镜像仓库下载镜像，也可以通过<code>docker pull URL</code>进行镜像的下载。当然，前提这个URL指向的是有效的远程镜像。</p>
+<h4 id="删除镜像"><a href="#删除镜像" class="headerlink" title="删除镜像"></a>删除镜像</h4><p><code>docker rmi</code>命令用于删除本地的镜像，用法为<code>docker rmi IMAGE[IMAGES...]</code>，其中IMAGE可以为标签或镜像ID。前面我们提及到标签事实上是“快捷方式”，因此通过标签删除镜像时，会先删除这个“快捷方式”，当某个镜像只剩下一个标签时，通过删除该标签才会把镜像从本地移除掉。</p>
+<p>如果你的镜像还有正在运行中的容器实例的话，通过<code>docker rmi</code>是无法移除掉的，当然，你可以通过<code>-f</code>参数强制删除某个镜像，但这往往是不安全的。正确的做法是通过<code>docker rm CONTAINER</code>移除对应的容器，再通过<code>docker rmi</code>进行镜像的删除。</p>
+<h4 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h4><p>一般情况下，我们可以通过三种途径进行Docker镜像的创建：基于已有镜像的容器的创建，本地模板导入、Dockerfile创建。</p>
+<ul>
+<li>基于已有镜像的容器创建镜像</li>
+</ul>
+<p>该方法主要依赖于<code>docker commit</code>命令，用法为<code>docker commit [OPTIONS] [RESPOSITORY[:TAG]]</code>，主要选项包括：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th style="text-align:center">option</th>
+<th style="text-align:right">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-a</code></td>
+<td style="text-align:center">–author=””</td>
+<td style="text-align:right">作者信息</td>
+</tr>
+<tr>
+<td><code>-m</code></td>
+<td style="text-align:center">–message=””</td>
+<td style="text-align:right">提交信息</td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td style="text-align:center">–pause=true</td>
+<td style="text-align:right">提交时暂停容器运行</td>
+</tr>
+</tbody>
+</table>
+<p>通过<code>docker ps</code>命令获取需要创建镜像的容器ID，通过执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> docker commit -m <span class="string">"[MESSAGE]"</span> <span class="_">-a</span> <span class="string">"[AUTHOR]"</span> [CONTAINER_ID] [IMAGE_NAME]</div></pre></td></tr></table></figure>
+<ul>
+<li>本地模板导入镜像</li>
+</ul>
+<p><code>docker import</code>可以从一个 打包好的镜像文件创建镜像，一般情况下表现为.tar.gz压缩包。例如，导入一个ubuntu操作系统的镜像到本地：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> cat ubuntu-15.04-x86_64.tar.gz | docker import - ubuntu:15.04</div></pre></td></tr></table></figure>
+<ul>
+<li>Dockerfile创建镜像</li>
+</ul>
+<p>Dockerfile是一个文本格式的配置文件，实际表现为命令集合，用户通过自定义批处理命令来快速创建自定义镜像。Dockerfile通常包含四部分：基础镜像信息，维护者信息，镜像操作指令和容器启动时指令。 编辑完Dockerfile文件后，通过<code>docker build</code>命令创建镜像，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$sudo docker build -t [TAG_NAME] [DOCKERFILE_PATH]</div></pre></td></tr></table></figure>
+<h4 id="存出和载入镜像"><a href="#存出和载入镜像" class="headerlink" title="存出和载入镜像"></a>存出和载入镜像</h4><ul>
+<li>存出镜像：<code>docker save</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> docker save -o ubuntu-15.04-x86_64.tar ubuntu:15.04</div></pre></td></tr></table></figure>
+<ul>
+<li>载入镜像：<code>docker load</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$sudo</span> docker load --input ubuntu-15.04-x86_64.tar</div><div class="line"><span class="comment"># 或者</span></div><div class="line"><span class="variable">$sudo</span> docker load &lt; ubuntu-15.04-x86_64.tar</div></pre></td></tr></table></figure>
+<h4 id="上传镜像"><a href="#上传镜像" class="headerlink" title="上传镜像"></a>上传镜像</h4><p><code>docker push</code>命令可以将镜像上传到远程仓库（默认为DockerHub官方仓库，需要注册账号）。用法为：<code>docker push NAME[:TAG]</code>,强烈建议添加好语义化的标签名后上传。</p>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>镜像是开启Docker容器的前提，掌握镜像的概念以及对应的查看、获取、搜索、删除、创建、导入导出、上传等操作对于Docker的入门学习有莫大的帮助。我们还可以借助Docker Hub等镜像仓库还提供的更全面的镜像服务进行学习和使用，例如web查询系统 (<a href="http://index.docker.io/" target="_blank" rel="external">http://index.docker.io/</a>) 等，同时我们也可以将日常使用的高质量的镜像资源分享到开源社区共同学习。</p>

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "eslint --ext .js app *.js || exit 0"
+    "eslint": "eslint --ext .js app *.js || exit 0",
+    "start": "node ./app/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,9 @@
     "eslint-plugin-html": "^1.7.0",
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^2.0.1"
+  },
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "request": "^2.79.0"
   }
 }
