@@ -1,14 +1,12 @@
 # Crawler
 A small project for node.
-### node¼òµ¥ÅÀ³æ
-* Ä¿±ê 
+### nodeç®€å•çˆ¬è™«
+* ç›®æ ‡ 
 
- ?ÅÀÈ¡Õ¾µã[http://blog.lxstart.net](http://blog.lxstart.net)µÄÍøÒ³×ÊÔ´£¬°üÀ¨html¡¢js¡¢css¡¢images 
+ çˆ¬å–ç«™ç‚¹[http://blog.lxstart.net](http://blog.lxstart.net)çš„ç½‘é¡µèµ„æºï¼ŒåŒ…æ‹¬htmlã€jsã€cssã€images 
   
- ?²¢±£´æµ½±¾µØ
-  
- ? 
+ å¹¶ä¿å­˜åˆ°æœ¬åœ° 
 
-* ÔËĞĞ·½·¨
+* è¿è¡Œæ–¹æ³•
 
  > npm install && npm start
