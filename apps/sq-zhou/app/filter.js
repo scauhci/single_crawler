@@ -13,8 +13,8 @@ function filter(html){
     var title=$(distinguish.header);
     $(title).each(function(index,elem){
         /*
-         *关于代码为什么用这样的方式可以从$title是一个多元素集合节点
-         * 其中$title中的一个节点含有如下的一些结构:
+         *关于代码为什么用这样的方式可以从title是一个多元素集合节点
+         * 其中title中的一个节点含有如下的一些结构:
          * attribs:
          { class: 'article-title',
          href: '/2016/08/04/javascript/pattern/singleton/' },
