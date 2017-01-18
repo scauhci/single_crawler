@@ -1,0 +1,24 @@
+{
+  "name": "web_getter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "eslint": "eslint --ext .js app *.js || exit 0"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cheerio": "^0.22.0",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-html": "^1.7.0",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "phantom": "^3.2.1",
+    "request": "^2.79.0",
+    "url": "^0.11.0"
+  }
+}
