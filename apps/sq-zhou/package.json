@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint --ext .js app *.js || exit 0",
-    "start": "node ./app/crawler.js"
+    "start": "node ./app/index.js"
   },
   "repository": {
     "type": "git",
